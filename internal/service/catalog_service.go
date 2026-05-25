@@ -69,6 +69,7 @@ func (s *CatalogService) UpdateCategory(id uuid.UUID, name, description string, 
 	cat.Name = name
 	cat.Description = description
 	cat.Order = order
+	cat.UpdatedAt = time.Now()
 	return s.repo.UpdateCategory(cat)
 }
 
