@@ -52,7 +52,7 @@ func main() {
 			name VARCHAR(255) NOT NULL,
 			description TEXT,
 			price BIGINT NOT NULL,
-			img_url TEXT,
+			image_url TEXT,
 			is_active BOOLEAN DEFAULT true,
 			created_at TIMESTAMP NOT NULL,
 			updated_at TIMESTAMP NOT NULL
