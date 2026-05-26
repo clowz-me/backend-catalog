@@ -11,6 +11,7 @@ type Category struct {
 	EstablishmentID uuid.UUID `json:"establishment_id"`
 	Name            string    `json:"name"`
 	Description     string    `json:"description,omitempty"`
+	ImageURL        string    `json:"image_url,omitempty"`
 	Order           int       `json:"order"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`

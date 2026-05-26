@@ -18,15 +18,15 @@ func NewPostgresCatalogRepository(db *sql.DB) domain.CatalogRepository {
 
 func (r *postgresCatalogRepository) CreateCategory(c *domain.Category) error {
 	query := `
-		INSERT INTO categories (id, establishment_id, name, description, "order", created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		INSERT INTO categories (id, establishment_id, name, description, image_url, "order", created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	`
-	_, err := r.db.Exec(query, c.ID, c.EstablishmentID, c.Name, c.Description, c.Order, c.CreatedAt, c.UpdatedAt)
+	_, err := r.db.Exec(query, c.ID, c.EstablishmentID, c.Name, c.Description, c.ImageURL, c.Order, c.CreatedAt, c.UpdatedAt)
 	return err
 }
 
 func (r *postgresCatalogRepository) GetCategoriesByEstablishment(estID uuid.UUID) ([]*domain.Category, error) {
-	query := `SELECT id, establishment_id, name, description, "order", created_at, updated_at FROM categories WHERE establishment_id = $1 ORDER BY "order" ASC`
+	query := `SELECT id, establishment_id, name, description, image_url, "order", created_at, updated_at FROM categories WHERE establishment_id = $1 ORDER BY "order" ASC`
 	rows, err := r.db.Query(query, estID)
 	if err != nil {
 		return nil, err
@@ -36,8 +36,12 @@ func (r *postgresCatalogRepository) GetCategoriesByEstablishment(estID uuid.UUID
 	var results []*domain.Category
 	for rows.Next() {
 		var c domain.Category
-		if err := rows.Scan(&c.ID, &c.EstablishmentID, &c.Name, &c.Description, &c.Order, &c.CreatedAt, &c.UpdatedAt); err != nil {
+		var imageURL sql.NullString
+		if err := rows.Scan(&c.ID, &c.EstablishmentID, &c.Name, &c.Description, &imageURL, &c.Order, &c.CreatedAt, &c.UpdatedAt); err != nil {
 			return nil, err
+		}
+		if imageURL.Valid {
+			c.ImageURL = imageURL.String
 		}
 		results = append(results, &c)
 	}
@@ -101,9 +105,13 @@ func (r *postgresCatalogRepository) GetProductsByEstablishment(estID uuid.UUID) 
 }
 
 func (r *postgresCatalogRepository) GetCategoryByID(id uuid.UUID) (*domain.Category, error) {
-	query := `SELECT id, establishment_id, name, description, "order", created_at, updated_at FROM categories WHERE id = $1`
+	query := `SELECT id, establishment_id, name, description, image_url, "order", created_at, updated_at FROM categories WHERE id = $1`
 	var c domain.Category
-	err := r.db.QueryRow(query, id).Scan(&c.ID, &c.EstablishmentID, &c.Name, &c.Description, &c.Order, &c.CreatedAt, &c.UpdatedAt)
+	var imageURL sql.NullString
+	err := r.db.QueryRow(query, id).Scan(&c.ID, &c.EstablishmentID, &c.Name, &c.Description, &imageURL, &c.Order, &c.CreatedAt, &c.UpdatedAt)
+	if err == nil && imageURL.Valid {
+		c.ImageURL = imageURL.String
+	}
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.New("category not found")
@@ -114,8 +122,8 @@ func (r *postgresCatalogRepository) GetCategoryByID(id uuid.UUID) (*domain.Categ
 }
 
 func (r *postgresCatalogRepository) UpdateCategory(c *domain.Category) error {
-	query := `UPDATE categories SET name = $1, description = $2, "order" = $3, updated_at = $4 WHERE id = $5`
-	res, err := r.db.Exec(query, c.Name, c.Description, c.Order, c.UpdatedAt, c.ID)
+	query := `UPDATE categories SET name = $1, description = $2, image_url = $3, "order" = $4, updated_at = $5 WHERE id = $6`
+	res, err := r.db.Exec(query, c.Name, c.Description, c.ImageURL, c.Order, c.UpdatedAt, c.ID)
 	if err != nil {
 		return err
 	}

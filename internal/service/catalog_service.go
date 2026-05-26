@@ -16,12 +16,13 @@ func NewCatalogService(repo domain.CatalogRepository) *CatalogService {
 	return &CatalogService{repo: repo}
 }
 
-func (s *CatalogService) AddCategory(estID uuid.UUID, name, description string, order int) (*domain.Category, error) {
+func (s *CatalogService) AddCategory(estID uuid.UUID, name, description string, imgURL string, order int) (*domain.Category, error) {
 	c := &domain.Category{
 		ID:              uuid.New(),
 		EstablishmentID: estID,
 		Name:            name,
 		Description:     description,
+		ImageURL:        imgURL,
 		Order:           order,
 		CreatedAt:       time.Now(),
 	}
@@ -61,13 +62,14 @@ func (s *CatalogService) GetProductsForEstablishment(estID uuid.UUID) ([]*domain
 	return s.repo.GetProductsByEstablishment(estID)
 }
 
-func (s *CatalogService) UpdateCategory(id uuid.UUID, name, description string, order int) error {
+func (s *CatalogService) UpdateCategory(id uuid.UUID, name, description string, imgURL string, order int) error {
 	cat, err := s.repo.GetCategoryByID(id)
 	if err != nil {
 		return err
 	}
 	cat.Name = name
 	cat.Description = description
+	cat.ImageURL = imgURL
 	cat.Order = order
 	cat.UpdatedAt = time.Now()
 	return s.repo.UpdateCategory(cat)

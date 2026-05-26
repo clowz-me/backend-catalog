@@ -42,6 +42,7 @@ func main() {
 			created_at TIMESTAMP NOT NULL,
 			updated_at TIMESTAMP NOT NULL
 		);
+		ALTER TABLE categories ADD COLUMN IF NOT EXISTS image_url VARCHAR(500);
 
 		CREATE INDEX IF NOT EXISTS idx_categories_establishment ON categories(establishment_id);
 

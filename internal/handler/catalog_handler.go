@@ -33,6 +33,7 @@ type CreateCategoryRequest struct {
 	EstablishmentID uuid.UUID `json:"establishment_id"`
 	Name            string    `json:"name"`
 	Description     string    `json:"description"`
+	ImageURL        string    `json:"image_url"`
 	Order           int       `json:"order"`
 }
 
@@ -43,7 +44,7 @@ func (h *CatalogHandler) CreateCategory(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	cat, err := h.svc.AddCategory(req.EstablishmentID, req.Name, req.Description, req.Order)
+	cat, err := h.svc.AddCategory(req.EstablishmentID, req.Name, req.Description, req.ImageURL, req.Order)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -116,6 +117,7 @@ func (h *CatalogHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 type UpdateCategoryRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	ImageURL    string `json:"image_url"`
 	Order       int    `json:"order"`
 }
 
@@ -133,7 +135,7 @@ func (h *CatalogHandler) UpdateCategory(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	err = h.svc.UpdateCategory(id, req.Name, req.Description, req.Order)
+	err = h.svc.UpdateCategory(id, req.Name, req.Description, req.ImageURL, req.Order)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
