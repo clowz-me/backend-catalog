@@ -75,9 +75,9 @@ func main() {
 	r.Use(middleware.Recoverer)
 
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "https://admin-local.qperto.com", "https://api-local.qperto.com"},
+		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:3001", "https://admin-local.qperto.com", "http://admin-local.qperto.com", "https://api-local.qperto.com", "http://api-local.qperto.com"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "X-Requested-With"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: true,
 		MaxAge:           300,
